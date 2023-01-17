@@ -1,5 +1,14 @@
+import Habit from './Habit'
+
 function App() {
-  return <h1>helllo World</h1>
+  return (
+    <>
+      <Habit completed={1} />
+      <Habit completed={10} />
+      <Habit completed={20} />
+      <Habit completed={30} />
+    </>
+  )
 }
 
 export default App
