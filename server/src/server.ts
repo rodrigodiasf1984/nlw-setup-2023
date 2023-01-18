@@ -1,17 +1,11 @@
 import Fastify from 'fastify'
-import { PrismaClient } from '@prisma/client'
 import fastifyCors from '@fastify/cors'
+import { appRoutes } from './routes'
 
 const app = Fastify()
-const prisma = new PrismaClient()
 
 app.register(fastifyCors)
-
-app.get('/hello', async () => {
-  const habits = await prisma.habit.findMany()
-  console.log('✅ ~ habits', JSON.stringify(habits, null, 2))
-  return habits
-})
+app.register(appRoutes)
 
 app
   .listen({
