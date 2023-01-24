@@ -1,5 +1,5 @@
-import { generateDatesFromYearBeginning } from '../../utils/generate-dates-from-year-beginning'
-import HabitDay from '../HabitDay'
+import { generateDatesFromYearBeginning } from '../utils/generate-dates-from-year-beginning'
+import HabitDay from './HabitDay'
 
 export const SummaryTable = () => {
   const days = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
