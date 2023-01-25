@@ -8,7 +8,7 @@ import {
 
 import { useFonts } from 'expo-font'
 import { StatusBar } from 'react-native'
-import Loading from './src/components/Loading'
+import { Loading } from './src/components'
 import { Routes } from './src/routes'
 
 export default function App() {
