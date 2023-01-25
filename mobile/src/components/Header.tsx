@@ -11,7 +11,7 @@ const Header = () => {
     <View className='w-full flex-row items-center justify-between'>
       <Logo />
       <TouchableOpacity
-        onPress={() => navigate('CreateHabit')}
+        onPress={() => navigate('createHabit')}
         activeOpacity={0.7}
         className='flex-row h-11 px-4 border border-violet-500 rounded-lg items-center '
       >
