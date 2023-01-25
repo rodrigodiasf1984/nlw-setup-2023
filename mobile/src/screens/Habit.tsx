@@ -1,7 +1,7 @@
 import { ScrollView, Text, View } from 'react-native'
 import React from 'react'
 import { useRoute } from '@react-navigation/native'
-import { BackButton, ProgressBar } from '../components'
+import { BackButton, Checkbox, ProgressBar } from '../components'
 import dayjs from 'dayjs'
 
 interface Params {
@@ -28,6 +28,10 @@ const Habit = () => {
           {formattedDate}
         </Text>
         <ProgressBar progress={50} />
+        <View className='mt-6'>
+          <Checkbox title='Fazer exercícios' checked={false} />
+          <Checkbox title='Beber 2L de água' checked={false} />
+        </View>
       </ScrollView>
     </View>
   )
