@@ -10,9 +10,9 @@ const AppRoutes = () => {
         headerShown: false
       }}
     >
-      <Screen name='Home' component={Home} />
-      <Screen name='Habit' component={Habit} />
-      <Screen name='CreateHabit' component={CreateHabit} />
+      <Screen name='home' component={Home} />
+      <Screen name='habit' component={Habit} />
+      <Screen name='createHabit' component={CreateHabit} />
     </Navigator>
   )
 }
