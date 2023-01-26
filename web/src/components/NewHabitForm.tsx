@@ -18,7 +18,7 @@ export const NewHabitForm = () => {
 
   const createNewHabit = (event: FormEvent) => {
     event.preventDefault()
-    console.log('Creating new habit', weekDays, title)
+    console.log('✅ ~  title', title, weekDays)
   }
 
   const handleToogleWeekDay = (weekDay: number) => {

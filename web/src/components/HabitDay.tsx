@@ -5,16 +5,18 @@ import * as Checkbox from '@radix-ui/react-checkbox'
 import { Check } from 'phosphor-react'
 
 type HabitDayProps = {
-  completed: number
-  amount: number
+  date: Date
+  completed?: number
+  amount?: number
 }
 
 type ColorMap = {
   [key: number]: string
 }
 
-function HabitDay({ completed, amount }: HabitDayProps) {
-  const completedPercentage: number = Math.round(completed / amount) * 100
+function HabitDay({ completed = 0, amount = 0 }: HabitDayProps) {
+  const completedPercentage: number =
+    amount > 0 ? Math.round(completed / amount) * 100 : 0
 
   const commonClasses = 'w-10 h-10 rounded-lg'
 
