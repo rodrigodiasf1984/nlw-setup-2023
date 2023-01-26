@@ -22,6 +22,7 @@ const availableDays = [
 
 const CreateHabit = () => {
   const [selectedDays, setSelectedDays] = useState<number[]>([])
+
   const handleToggleDay = (day: number) => {
     if (selectedDays.includes(day)) {
       setSelectedDays(selectedDays.filter((selectedDay) => selectedDay !== day))
@@ -30,6 +31,7 @@ const CreateHabit = () => {
       setSelectedDays([...selectedDays, day])
     }
   }
+
   return (
     <View className='flex-1 bg-background px-8 pt-16'>
       <ScrollView
