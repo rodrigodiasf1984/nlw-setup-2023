@@ -3,12 +3,15 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from 'react-native'
 import React, { useState } from 'react'
 import { BackButton, Checkbox } from '../components'
 import colors from 'tailwindcss/colors'
 import { Feather } from '@expo/vector-icons'
+import { api } from '../lib/axios'
+import { useNavigation } from '@react-navigation/native'
 
 const availableDays = [
   'Domingo',
@@ -21,14 +24,38 @@ const availableDays = [
 ]
 
 const CreateHabit = () => {
-  const [selectedDays, setSelectedDays] = useState<number[]>([])
+  const [weekDays, setWeekDays] = useState<number[]>([])
+  const [title, setTitle] = useState<string>('')
+  const navigation = useNavigation()
 
   const handleToggleDay = (day: number) => {
-    if (selectedDays.includes(day)) {
-      setSelectedDays(selectedDays.filter((selectedDay) => selectedDay !== day))
+    if (weekDays.includes(day)) {
+      setWeekDays(weekDays.filter((selectedDay) => selectedDay !== day))
       return
     } else {
-      setSelectedDays([...selectedDays, day])
+      setWeekDays([...weekDays, day])
+    }
+  }
+
+  const handleCreateNewHabit = async () => {
+    try {
+      if (!title.trim()) {
+        Alert.alert('Opa!', 'Você precisa informar o nome do hábito')
+      }
+      if (weekDays.length === 0) {
+        Alert.alert('Opa!', 'Você precisa informar a recorrência do hábito')
+      }
+      await api.post('/habits', {
+        title,
+        weekDays
+      })
+      setTitle('')
+      setWeekDays([])
+      Alert.alert('Sucesso!', 'Hábito criado com sucesso')
+      navigation.navigate('home')
+    } catch (error) {
+      Alert.alert('Opa!', 'Ocorreu um erro ao criar o hábito')
+      console.log('✅ ~  error', error)
     }
   }
 
@@ -49,6 +76,8 @@ const CreateHabit = () => {
           placeholder='Digite o nome do hábito'
           placeholderTextColor={colors.zinc[400]}
           className='h-12 pl-4 rounded-lg mt-3 bg-zinc-900 text-white border-2 border-zinc-800 focus:border-green-600'
+          onChangeText={setTitle}
+          value={title}
         />
         <Text className='font-semibold  mt-4 mb-3 text-white text-base'>
           Qual a recorrência
@@ -57,13 +86,14 @@ const CreateHabit = () => {
           <Checkbox
             key={day}
             title={day}
-            checked={selectedDays.includes(availableDays.indexOf(day))}
+            checked={weekDays.includes(availableDays.indexOf(day))}
             onPress={() => handleToggleDay(index)}
           />
         ))}
         <TouchableOpacity
           activeOpacity={0.7}
           className='w-full h-14 flex-row items-center justify-center mt-2 bg-green-600 rounded-md'
+          onPress={handleCreateNewHabit}
         >
           <Feather name='check' size={20} color={colors.white} />
           <Text className='ml-2 font-semibold text-white text-base'>

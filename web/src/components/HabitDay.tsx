@@ -36,6 +36,11 @@ function HabitDay({ completed = 0, amount = 0, date }: HabitDayProps) {
     100: 'bg-violet-500 border-violet-300'
   }
 
+  const todayClasse = 'border-white border-4'
+
+  const today = dayjs().startOf('day').toDate()
+  const isCurrentDay = dayjs(date).isSame(today, 'day')
+
   const dayAndMonth = dayjs(date).format('DD/MM')
   const dayOfWeek = dayjs(date).format('dddd')
   const formattedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1)
@@ -43,7 +48,11 @@ function HabitDay({ completed = 0, amount = 0, date }: HabitDayProps) {
   return (
     <Popover.Root>
       <Popover.Trigger
-        className={clsx(commonClasses, colorMap[roundedPercentage])}
+        className={clsx(
+          commonClasses,
+          colorMap[roundedPercentage],
+          isCurrentDay && todayClasse
+        )}
       />
       <Popover.Portal>
         <Popover.Content className='min-w-[320px] p-6 rounded-2xl bg-zinc-900 flex flex-col '>
