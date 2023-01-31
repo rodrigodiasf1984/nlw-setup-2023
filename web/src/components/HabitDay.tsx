@@ -3,6 +3,7 @@ import ProgressBar from './ProgressBar'
 import clsx from 'clsx'
 import * as Checkbox from '@radix-ui/react-checkbox'
 import { Check } from 'phosphor-react'
+import dayjs from 'dayjs'
 
 type HabitDayProps = {
   date: Date
@@ -11,12 +12,18 @@ type HabitDayProps = {
 }
 
 type ColorMap = {
-  [key: number]: string
+  [key: string]: string
 }
 
-function HabitDay({ completed = 0, amount = 0 }: HabitDayProps) {
+function HabitDay({ completed = 0, amount = 0, date }: HabitDayProps) {
   const completedPercentage: number =
-    amount > 0 ? Math.round(completed / amount) * 100 : 0
+    completed > amount
+      ? 100
+      : amount > 0
+      ? Math.round(completed / amount) * 100
+      : 0
+
+  const roundedPercentage = completedPercentage - (completedPercentage % 20)
 
   const commonClasses = 'w-10 h-10 rounded-lg'
 
@@ -29,23 +36,20 @@ function HabitDay({ completed = 0, amount = 0 }: HabitDayProps) {
     100: 'bg-violet-500 border-violet-300'
   }
 
+  const dayAndMonth = dayjs(date).format('DD/MM')
+  const dayOfWeek = dayjs(date).format('dddd')
+  const formattedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1)
+
   return (
     <Popover.Root>
       <Popover.Trigger
-        className={clsx(
-          commonClasses,
-          colorMap[
-            Object.keys(colorMap).find(
-              (key) => completedPercentage < Number(key)
-            )
-          ] || 'bg-zinc-900 border-2 border-zinc-800'
-        )}
+        className={clsx(commonClasses, colorMap[roundedPercentage])}
       />
       <Popover.Portal>
-        <Popover.Content className='min-w-[320px] p-6 rounded-2xl bg-zinc-900 flex flex-col'>
-          <span className='font-semibold text-zinc-400'>Segunda-feira</span>
+        <Popover.Content className='min-w-[320px] p-6 rounded-2xl bg-zinc-900 flex flex-col '>
+          <span className='font-semibold text-zinc-400'>{formattedDay}</span>
           <span className='mt-1 font-extrabold leading-tight text-3xl'>
-            17/01
+            {dayAndMonth}
           </span>
           <ProgressBar progress={completedPercentage} />
           <div className='flex flex-col gap-3'>

@@ -1,6 +1,8 @@
 import { Check } from 'phosphor-react'
 import * as Checkbox from '@radix-ui/react-checkbox'
 import { FormEvent, useState } from 'react'
+import { api } from '../lib/axios'
+import { toast } from 'react-toastify'
 
 const availableWeekDays = [
   'Domingo',
@@ -16,9 +18,19 @@ export const NewHabitForm = () => {
   const [title, setTitle] = useState('')
   const [weekDays, setWeekDays] = useState<number[]>([])
 
-  const createNewHabit = (event: FormEvent) => {
+  const createNewHabit = async (event: FormEvent) => {
     event.preventDefault()
-    console.log('✅ ~  title', title, weekDays)
+    if (!title || weekDays.length === 0) {
+      return
+    }
+
+    await api.post('/habits', {
+      title,
+      weekDays
+    })
+    setTitle('')
+    setWeekDays([])
+    toast.success('Hábito criado com sucesso!')
   }
 
   const handleToogleWeekDay = (weekDay: number) => {
@@ -41,6 +53,7 @@ export const NewHabitForm = () => {
         placeholder='Ex: Ler 30 minutos por dia'
         autoFocus
         onChange={(event) => setTitle(event.target.value)}
+        value={title}
       />
       <label className='font-semibold leading-tight mt-4' htmlFor='description'>
         Qual a recorrência
@@ -52,6 +65,7 @@ export const NewHabitForm = () => {
               key={weekDay}
               className='flex items-center gap-3 group'
               onCheckedChange={() => handleToogleWeekDay(index)}
+              checked={weekDays.includes(index)}
             >
               <div className='h-8 w-8 rounded-lg flex items-center justify-center bg-zinc-900 border-2 border-zinc-800 group-data-[state=checked]:bg-green-500  group-data-[state=checked]:border-green-500 transition-colors'>
                 <Checkbox.Indicator className=''>
