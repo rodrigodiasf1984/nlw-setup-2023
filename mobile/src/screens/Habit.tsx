@@ -6,6 +6,7 @@ import dayjs from 'dayjs'
 import { api } from '../lib/axios'
 import { generateProgressPercentage } from '../utils/generate-progress-percentage'
 import { HabitsEmpty } from '../components/HabitsEmpty'
+import clsx from 'clsx'
 
 interface Params {
   date: string
@@ -26,14 +27,19 @@ const Habit = () => {
 
   const route = useRoute()
   const { date } = route.params as Params
-  const formattedWeekDay = dayjs(date).format('dddd')
-  const formattedDate = dayjs(date).format('DD/MM')
+  const parsedDate = dayjs(date)
+  const isDateInPast = parsedDate.endOf('day').isBefore(new Date())
+  console.log('✅ ~  isDateInPast', isDateInPast)
+  const dayOfWeek = parsedDate.format('dddd')
+  const dayAndMonth = parsedDate.format('DD/MM')
+
   const habitsProgress = dayInfo?.possibleHabits.length
     ? generateProgressPercentage(
         dayInfo.possibleHabits.length,
         completed.length
       )
     : 0
+
   async function fetchHabits() {
     try {
       setLoading(true)
@@ -73,19 +79,24 @@ const Habit = () => {
       >
         <BackButton />
         <Text className='mt-6 text-zinc-400 font-semibold text-base lowercase'>
-          {formattedWeekDay}
+          {dayOfWeek}
         </Text>
         <Text className='text-white font-extrabold text-3xl'>
-          {formattedDate}
+          {dayAndMonth}
         </Text>
         <ProgressBar progress={habitsProgress} />
-        <View className='mt-6'>
+        <View
+          className={clsx('mt-6', {
+            ['opacity-50']: isDateInPast
+          })}
+        >
           {dayInfo?.possibleHabits ? (
             dayInfo?.possibleHabits?.map((habit) => (
               <Checkbox
                 key={habit.id}
                 title={habit.title}
                 checked={completed.includes(habit.id)}
+                disabled={isDateInPast}
                 onPress={() => handleToggleHabit(habit.id)}
               />
             ))
@@ -93,6 +104,12 @@ const Habit = () => {
             <HabitsEmpty />
           )}
         </View>
+        {isDateInPast && (
+          <Text className='text-white mt-10 text-center'>
+            Você não pode mais adicionar ou remover hábitos de um dia que já
+            passou
+          </Text>
+        )}
       </ScrollView>
     </View>
   )
