@@ -40,10 +40,13 @@ const CreateHabit = () => {
   const handleCreateNewHabit = async () => {
     try {
       if (!title.trim()) {
-        Alert.alert('Opa!', 'Você precisa informar o nome do hábito')
+        return Alert.alert('Opa!', 'Você precisa informar o nome do hábito')
       }
       if (weekDays.length === 0) {
-        Alert.alert('Opa!', 'Você precisa informar a recorrência do hábito')
+        return Alert.alert(
+          'Opa!',
+          'Você precisa informar a recorrência do hábito'
+        )
       }
       await api.post('/habits', {
         title,

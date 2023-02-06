@@ -1,18 +1,68 @@
-import { ScrollView, Text, View } from 'react-native'
-import React from 'react'
+import { Alert, ScrollView, Text, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native'
-import { BackButton, Checkbox, ProgressBar } from '../components'
+import { BackButton, Checkbox, Loading, ProgressBar } from '../components'
 import dayjs from 'dayjs'
+import { api } from '../lib/axios'
+import { generateProgressPercentage } from '../utils/generate-progress-percentage'
 
 interface Params {
   date: string
 }
 
+interface DayInfoProps {
+  completed: boolean
+  possibleHabits: {
+    id: string
+    title: string
+  }[]
+}
+
 const Habit = () => {
+  const [loading, setLoading] = useState<boolean>(false)
+  const [dayInfo, setDayInfo] = useState<DayInfoProps | null>(null)
+  const [completed, setCompleted] = useState<string[]>([])
+
   const route = useRoute()
   const { date } = route.params as Params
   const formattedWeekDay = dayjs(date).format('dddd')
   const formattedDate = dayjs(date).format('DD/MM')
+  const habitsProgress = dayInfo?.possibleHabits.length
+    ? generateProgressPercentage(
+        dayInfo.possibleHabits.length,
+        completed.length
+      )
+    : 0
+  async function fetchHabits() {
+    try {
+      setLoading(true)
+
+      const response = await api.get('/day', { params: { date } })
+      setDayInfo(response.data)
+      setCompleted(response.data.completedHabits)
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Ops', 'Não foi possivel carregar as informações')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleToggleHabit = (id: string) => {
+    if (completed.includes(id)) {
+      setCompleted(completed.filter((habitId) => habitId !== id))
+    } else {
+      setCompleted([...completed, id])
+    }
+  }
+
+  useEffect(() => {
+    fetchHabits()
+  }, [])
+
+  if (loading) {
+    return <Loading />
+  }
 
   return (
     <View className='flex-1 bg-background px-8 pt-16'>
@@ -27,10 +77,17 @@ const Habit = () => {
         <Text className='text-white font-extrabold text-3xl'>
           {formattedDate}
         </Text>
-        <ProgressBar progress={50} />
+        <ProgressBar progress={habitsProgress} />
         <View className='mt-6'>
-          <Checkbox title='Fazer exercícios' checked={false} />
-          <Checkbox title='Beber 2L de água' checked={false} />
+          {dayInfo?.possibleHabits &&
+            dayInfo?.possibleHabits?.map((habit) => (
+              <Checkbox
+                key={habit.id}
+                title={habit.title}
+                checked={completed.includes(habit.id)}
+                onPress={() => handleToggleHabit(habit.id)}
+              />
+            ))}
         </View>
       </ScrollView>
     </View>
