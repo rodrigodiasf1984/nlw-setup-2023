@@ -2,9 +2,9 @@ import { View, Text, ScrollView } from 'react-native'
 import { DAY_SIZE } from '../components/HabitDay'
 import { Header, HabitDay, Loading } from '../components'
 import { generateDatesFromYearBeginning } from '../utils/generateDatesFromYearBeginning'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { api } from '../lib/axios'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 
 const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
@@ -36,9 +36,11 @@ const Home = () => {
     }
   }
 
-  useEffect(() => {
-    getHabits()
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      getHabits()
+    }, [])
+  )
 
   if (loading) {
     return <Loading />

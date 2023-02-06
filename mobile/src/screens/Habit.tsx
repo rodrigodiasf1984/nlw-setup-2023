@@ -29,7 +29,6 @@ const Habit = () => {
   const { date } = route.params as Params
   const parsedDate = dayjs(date)
   const isDateInPast = parsedDate.endOf('day').isBefore(new Date())
-  console.log('✅ ~  isDateInPast', isDateInPast)
   const dayOfWeek = parsedDate.format('dddd')
   const dayAndMonth = parsedDate.format('DD/MM')
 
@@ -56,6 +55,15 @@ const Habit = () => {
   }
 
   const handleToggleHabit = (id: string) => {
+    try {
+      setLoading(true)
+      api.patch(`/habits/${id}/toggle`)
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Ops', 'Não foi possivel atualizar o hábito')
+    } finally {
+      setLoading(false)
+    }
     if (completed.includes(id)) {
       setCompleted(completed.filter((habitId) => habitId !== id))
     } else {
