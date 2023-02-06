@@ -5,10 +5,11 @@ import * as Checkbox from '@radix-ui/react-checkbox'
 import { Check } from 'phosphor-react'
 import dayjs from 'dayjs'
 import { HabitsList } from './HabitsList'
+import { useState } from 'react'
 
 type HabitDayProps = {
   date: Date
-  completed?: number
+  defaultCompleted?: number
   amount?: number
 }
 
@@ -16,14 +17,11 @@ type ColorMap = {
   [key: string]: string
 }
 
-function HabitDay({ completed = 0, amount = 0, date }: HabitDayProps) {
-  const completedPercentage: number =
-    completed > amount
-      ? 100
-      : amount > 0
-      ? Math.round(completed / amount) * 100
-      : 0
+function HabitDay({ defaultCompleted = 0, amount = 0, date }: HabitDayProps) {
+  const [completed, setCompleted] = useState(defaultCompleted)
 
+  const completedPercentage: number =
+    amount > 0 ? Math.round((completed / amount) * 100) : 0
   const roundedPercentage = completedPercentage - (completedPercentage % 20)
 
   const commonClasses = 'w-10 h-10 rounded-lg'
@@ -46,6 +44,10 @@ function HabitDay({ completed = 0, amount = 0, date }: HabitDayProps) {
   const dayOfWeek = dayjs(date).format('dddd')
   const formattedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1)
 
+  const handleCompletedChanged = (completed: number) => {
+    setCompleted(completed)
+  }
+
   return (
     <Popover.Root>
       <Popover.Trigger
@@ -56,13 +58,13 @@ function HabitDay({ completed = 0, amount = 0, date }: HabitDayProps) {
         )}
       />
       <Popover.Portal>
-        <Popover.Content className='min-w-[320px] p-6 rounded-2xl bg-zinc-900 flex flex-col '>
+        <Popover.Content className='min-w-[320px] p-6 rounded-2xl bg-zinc-900 flex flex-col transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-background'>
           <span className='font-semibold text-zinc-400'>{formattedDay}</span>
           <span className='mt-1 font-extrabold leading-tight text-3xl'>
             {dayAndMonth}
           </span>
           <ProgressBar progress={completedPercentage} />
-          <HabitsList date={date} />
+          <HabitsList date={date} onCompletedChanged={handleCompletedChanged} />
           <Popover.Arrow height={8} width={16} className='fill-zinc-900' />
         </Popover.Content>
       </Popover.Portal>

@@ -6,6 +6,7 @@ import { api } from '../lib/axios'
 
 interface HabitListProps {
   date: Date
+  onCompletedChanged: (completed: number) => void
 }
 
 interface HabitsInfo {
@@ -16,7 +17,7 @@ interface HabitsInfo {
   }>
   completedHabits: string[]
 }
-export function HabitsList({ date }: HabitListProps) {
+export function HabitsList({ date, onCompletedChanged }: HabitListProps) {
   const [habitsInfo, setHabitsInfo] = useState<HabitsInfo>()
 
   useEffect(() => {
@@ -31,14 +32,11 @@ export function HabitsList({ date }: HabitListProps) {
       })
   }, [])
 
-  const handleToogleHabit = async (habitId: string) => {
+  async function handleToggleHabits(habitId: string) {
     const isHabitAlreadyCompleted =
-      habitsInfo?.completedHabits.includes(habitId)
+      habitsInfo!.completedHabits.includes(habitId)
 
-    await api.post(`/habits/${habitId}/toggle`)
-
-    const isHabitAlreadyCompletedAfterToggle =
-      habitsInfo?.completedHabits.includes(habitId)
+    await api.patch(`/habits/${habitId}/toggle`)
 
     let completedHabits: string[] = []
     if (isHabitAlreadyCompleted) {
@@ -52,21 +50,26 @@ export function HabitsList({ date }: HabitListProps) {
       possibleHabits: habitsInfo!.possibleHabits,
       completedHabits
     })
+    onCompletedChanged(completedHabits?.length)
   }
 
   const isDateInPast = dayjs(date).endOf('day').isBefore(new Date())
-
   return (
     <div className='mt-6 flex flex-col gap-3'>
       {habitsInfo?.possibleHabits.map((habit) => {
         return (
           <Checkbox.Root
             key={habit.id}
+            onCheckedChange={() => handleToggleHabits(habit.id)}
             checked={habitsInfo.completedHabits.includes(habit.id)}
             disabled={isDateInPast}
             className='flex items-center gap-3 group focus:outline-none disabled:cursor-not-allowed'
           >
-            <div className='h-8 w-8 rounded-lg flex items-center justify-center bg-zinc-900 border-2 border-zinc-800 group-data-[state=checked]:bg-green-500  group-data-[state=checked]:border-green-500 transition-colors  focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-background'>
+            <div
+              className='h-8 w-8 rounded-lg flex items-center justify-center bg-zinc-900 border-2 border-zinc-800
+             group-data-[state=checked]:bg-green-500  group-data-[state=checked]:border-green-500 
+             group-focus:ring-2 group-focus:ring-violet-500 group-focus:ring-offset-2 group-focus:ring-offset-background transition-colors'
+            >
               <Checkbox.Indicator className=''>
                 <Check size={20} className='text-white' />
               </Checkbox.Indicator>
